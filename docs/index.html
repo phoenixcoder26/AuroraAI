@@ -1,0 +1,576 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif}
+.root{position:relative;min-height:1100px;overflow:hidden}
+.bg{position:absolute;inset:0;z-index:0}
+#aurora-canvas{position:absolute;inset:0;width:100%;height:100%}
+.overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(1,4,14,.52) 0%,rgba(2,8,22,.68) 55%,rgba(3,9,24,.82) 100%);z-index:1}
+.ui{position:relative;z-index:2;padding:0 0 2rem}
+
+.hero{padding:1rem 1.2rem .8rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(0,220,180,.14)}
+.logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#00e5ff,#00ff87);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:#001020;flex-shrink:0}
+.hero h1{font-size:19px;font-weight:600;color:#fff;letter-spacing:-.3px}
+.hero p{font-size:11px;color:#6ac8e8;margin-top:1px}
+.live{margin-left:auto;display:flex;align-items:center;gap:5px;background:rgba(0,255,135,.1);border:1px solid rgba(0,255,135,.3);border-radius:20px;padding:3px 9px;font-size:11px;color:#00ff87;flex-shrink:0}
+.ld{width:6px;height:6px;border-radius:50%;background:#00ff87;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:9px 1.2rem}
+.kpi{background:rgba(8,18,50,.65);border:1px solid rgba(0,170,255,.16);border-radius:9px;padding:9px 11px;position:relative;overflow:hidden;backdrop-filter:blur(4px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:9px 9px 0 0;background:var(--k,#2a78d6)}
+.kl{font-size:10px;color:#6aabcb;text-transform:uppercase;letter-spacing:.6px;font-weight:500;margin-bottom:3px}
+.kv{font-size:19px;font-weight:600;color:#fff;line-height:1}
+.ks{font-size:10px;margin-top:2px;color:#4ec994}
+
+.sec{padding:0 1.2rem;margin-bottom:11px}
+.st{font-size:11px;font-weight:600;color:#4ec994;text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.st::after{content:'';flex:1;height:1px;background:rgba(0,210,150,.18)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.card{background:rgba(6,16,48,.72);border:1px solid rgba(0,150,255,.17);border-radius:10px;padding:11px;backdrop-filter:blur(5px)}
+.ct{font-size:11px;font-weight:600;color:#96ccf0;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.ct span{font-size:10px;font-weight:400;color:#3d6a8a}
+
+/* GLOBE */
+.globe-card{background:rgba(6,16,48,.72);border:1px solid rgba(0,150,255,.17);border-radius:10px;padding:12px;backdrop-filter:blur(5px)}
+.grow{display:flex;gap:12px;align-items:flex-start}
+.cwrap{position:relative;flex-shrink:0;cursor:grab;user-select:none}
+.cwrap:active{cursor:grabbing}
+.sp{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;padding-top:2px}
+.kplbl{font-size:22px;font-weight:500;color:#fff}
+.kpdsc{font-size:11px;color:#6aabcb;margin-top:1px;line-height:1.5}
+.kpst{font-size:10px;padding:2px 8px;border-radius:14px;display:inline-block;margin-top:3px;font-weight:500}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.stt{background:rgba(0,35,80,.5);border-radius:6px;padding:7px 9px;border:1px solid rgba(0,130,255,.1)}
+.sl{font-size:10px;color:#4a7a9b;margin-bottom:2px}
+.sv{font-size:12px;font-weight:500;color:#b8d8f8}
+.pbar{margin-top:2px}
+.plbl{display:flex;justify-content:space-between;font-size:10px;color:#4a7a9b;margin-bottom:2px}
+.ptr{height:4px;background:rgba(0,50,100,.5);border-radius:2px;overflow:hidden}
+.pfill{height:100%;border-radius:2px;transition:width .5s}
+.legstrip{display:flex;align-items:center;gap:5px;font-size:10px;color:#4a7a9b}
+.leggrad{flex:1;height:5px;border-radius:2px}
+.gcontrols{margin-top:8px}
+.crow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.clbl{font-size:10px;color:#4a7a9b;min-width:22px}
+.cbtns{display:flex;gap:4px;flex-wrap:wrap}
+.kb{padding:3px 9px;border-radius:6px;border:1px solid rgba(0,150,255,.22);background:rgba(0,25,60,.65);color:#6aabcb;font-size:10px;cursor:pointer;font-weight:500;transition:all .15s}
+.kb.active{color:#fff;border-color:transparent}
+.abtn{padding:4px 12px;border-radius:6px;border:1px solid rgba(0,150,255,.22);background:rgba(0,25,60,.65);color:#96ccf0;font-size:11px;cursor:pointer}
+.hint{font-size:10px;color:#2e5a70;text-align:center;margin-top:5px}
+
+/* PROBABILITY ENGINE */
+.peng{display:flex;flex-direction:column;gap:6px}
+.srow{display:flex;align-items:center;gap:7px}
+.srow label{font-size:10px;color:#4a7a9b;min-width:88px}
+.srow input{flex:1}
+.sv2{font-size:11px;font-weight:600;color:#b8d8f8;min-width:38px;text-align:right}
+.pmrow{display:flex;align-items:center;gap:7px;margin-top:2px}
+.pmtr{flex:1;height:16px;background:rgba(0,35,90,.5);border-radius:8px;overflow:hidden;border:1px solid rgba(0,130,255,.13)}
+.pmfl{height:100%;border-radius:8px;transition:width .4s,background .4s}
+.pmnum{font-size:13px;font-weight:700;color:#fff;min-width:38px;text-align:right}
+.pcmt{font-size:10px;color:#3a7a9a;margin-top:2px;text-align:right}
+
+/* DECISION BOUNDARY */
+.dbwrap{width:100%;height:230px;position:relative;border-radius:7px;overflow:hidden}
+#dbCanvas{position:absolute;inset:0}
+
+/* FI bars */
+.fiwrap{display:flex;flex-direction:column;gap:3px}
+.firow{display:flex;align-items:center;gap:4px}
+.finame{font-size:9px;color:#6aabcb;width:98px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fitr{flex:1;height:11px;background:rgba(0,35,90,.5);border-radius:2px;overflow:hidden}
+.fifill{height:100%;border-radius:2px;transition:width .6s}
+.finum{font-size:9px;color:#6aabcb;width:32px;flex-shrink:0}
+
+/* CONFUSION MATRIX */
+.cmg{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.cmc{border-radius:6px;padding:7px;text-align:center;border:1px solid}
+.cmval{font-size:16px;font-weight:700;line-height:1}
+.cmpct{font-size:9px;opacity:.8;margin-top:1px}
+.cmlbl{font-size:8px;opacity:.5;margin-top:1px}
+
+/* THRESHOLD INFO */
+.thinfo{background:rgba(0,25,70,.55);border:1px solid rgba(0,130,255,.13);border-radius:6px;padding:5px 9px;margin-top:5px;font-size:10px;color:#6aabcb;display:flex;gap:10px;flex-wrap:wrap}
+.tiv{font-weight:600}
+
+/* ROC/PR legend */
+.rleg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;font-size:10px;color:#6aabcb}
+.rli{display:flex;align-items:center;gap:3px}
+.rln{width:14px;height:2px;border-radius:1px;flex-shrink:0}
+.rld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+</style>
+
+<div class="root">
+<div class="bg">
+  <canvas id="aurora-canvas"></canvas>
+</div>
+<div class="overlay"></div>
+<div class="ui">
+
+<div class="hero">
+  <div class="logo">A</div>
+  <div><h1>AuroraAI — Mission Control</h1><p>Aurora Borealis Forecasting · Space Weather and Machine Learning · NASA OMNIWeb</p></div>
+  <div class="live"><div class="ld"></div>Live</div>
+</div>
+
+<div class="kpis">
+  <div class="kpi" style="--k:#00c87a"><div class="kl">ROC-AUC</div><div class="kv">0.977</div><div class="ks">Random Forest</div></div>
+  <div class="kpi" style="--k:#2a78d6"><div class="kl">Threshold</div><div class="kv">0.40</div><div class="ks">+12.7% recall</div></div>
+  <div class="kpi" style="--k:#8b5cf6"><div class="kl">F1 score</div><div class="kv">0.731</div><div class="ks">vs 0.694 baseline</div></div>
+  <div class="kpi" style="--k:#f59e0b"><div class="kl">Recall</div><div class="kv">81.5%</div><div class="ks">Tuned model</div></div>
+  <div class="kpi" style="--k:#ef4444"><div class="kl">Aurora rate</div><div class="kv">9.5%</div><div class="ks">Kp ≥ 5 events</div></div>
+</div>
+
+<div class="sec">
+  <div class="st">Aurora probability engine</div>
+  <div class="card peng">
+    <div class="ct">Interactive estimator — Bz GSM and solar wind speed <span>Logistic approximation</span></div>
+    <div class="srow"><label>Bz GSM (nT)</label><input type="range" min="-30" max="20" value="-10" step="0.5" id="bzS"><div class="sv2" id="bzV">-10.0</div></div>
+    <div class="srow"><label>Wind speed (km/s)</label><input type="range" min="280" max="820" value="500" step="5" id="spdS"><div class="sv2" id="spdV">500</div></div>
+    <div class="pmrow">
+      <span style="font-size:10px;color:#4a7a9b;min-width:95px">Aurora probability</span>
+      <div class="pmtr"><div class="pmfl" id="pFill" style="width:72%"></div></div>
+      <div class="pmnum" id="pNum">72%</div>
+    </div>
+    <div class="pcmt" id="pCmt">Strong southward Bz + elevated solar wind — high aurora likelihood</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="st">Kp index globe — aurora visibility zones</div>
+  <div class="globe-card">
+    <div class="grow">
+      <div class="cwrap"><canvas id="globe" width="240" height="240"></canvas></div>
+      <div class="sp">
+        <div><div class="kplbl">Kp = <span id="kpv">5</span></div><div class="kpdsc" id="kpdsc">Minor geomagnetic storm — model threshold. Aurora visible at mid-latitudes.</div><span class="kpst" id="kpst">G1 — minor storm</span></div>
+        <div class="sgrid">
+          <div class="stt"><div class="sl">Aurora latitude</div><div class="sv" id="slat">~66° N</div></div>
+          <div class="stt"><div class="sl">Zone radius</div><div class="sv" id="srad">~25°</div></div>
+          <div class="stt"><div class="sl">Visibility</div><div class="sv" id="svis">Moderate</div></div>
+          <div class="stt"><div class="sl">Model target</div><div class="sv" id="stgt">Yes (Kp ≥ 5)</div></div>
+        </div>
+        <div class="pbar"><div class="plbl"><span>Aurora probability</span><span id="ppct">65%</span></div><div class="ptr"><div class="pfill" id="gPfill" style="width:65%;background:#0ea5e9"></div></div></div>
+        <div class="legstrip"><span>Low</span><div class="leggrad" style="background:linear-gradient(90deg,#22c55e,#fbbf24,#ef4444)"></div><span>High</span></div>
+      </div>
+    </div>
+    <div class="gcontrols">
+      <div class="crow"><span class="clbl">Kp</span><input type="range" id="kpSlider" min="0" max="9" step="1" value="5" style="flex:1"></div>
+      <div class="crow"><span class="clbl"></span><div class="cbtns"><button class="kb" data-kp="3">Kp 3</button><button class="kb active" data-kp="5">Kp 5</button><button class="kb" data-kp="7">Kp 7</button><button class="kb" data-kp="9">Kp 9</button></div><button class="abtn" id="abtn">▶ Animate</button></div>
+    </div>
+    <div class="hint">Drag to rotate · Slider or buttons to change Kp</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="st">Decision boundary — animated probability field</div>
+  <div class="card">
+    <div class="ct">Bz GSM vs Solar Wind Speed — bubbles show live aurora probability <span>ROC-AUC 0.9769 · t=0.40</span></div>
+    <div class="dbwrap"><canvas id="dbCanvas"></canvas></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-size:10px;color:#6aabcb">
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626;display:inline-block"></span>Aurora (Kp ≥ 5)</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:50%;background:#7c3aed;display:inline-block"></span>No aurora</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block"></span>Live cursor</span>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="st">Model performance</div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">ROC curve <span>AUC = 0.9769</span></div>
+      <div class="rleg"><div class="rli"><div class="rln" style="background:#00ff87"></div>Random Forest</div><div class="rli"><div class="rln" style="background:#333"></div>Random</div><div class="rli"><div class="rld" style="background:#f59e0b"></div>t=0.40</div></div>
+      <div style="position:relative;height:170px"><canvas id="rocC" role="img" aria-label="ROC curve AUC 0.9769">ROC-AUC 0.9769</canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Precision-Recall <span>PR-AUC = 0.841</span></div>
+      <div class="rleg"><div class="rli"><div class="rln" style="background:#00e5ff"></div>Random Forest</div><div class="rli"><div class="rln" style="background:#333"></div>No-skill</div><div class="rli"><div class="rld" style="background:#f59e0b"></div>t=0.40</div></div>
+      <div style="position:relative;height:170px"><canvas id="prC" role="img" aria-label="PR curve AUC 0.841">PR-AUC 0.841</canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="st">Threshold analysis</div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Precision / Recall / F1 vs threshold</div>
+      <div class="srow"><label>Threshold</label><input type="range" min="0.05" max="0.80" step="0.05" value="0.40" id="tS"><div class="sv2" id="tV">0.40</div></div>
+      <div style="position:relative;height:165px"><canvas id="tC" role="img" aria-label="Threshold vs metrics">Precision recall F1</canvas></div>
+      <div class="thinfo" id="thInfo"><span><span class="tiv" style="color:#8b5cf6">Precision:</span> 0.680</span><span><span class="tiv" style="color:#00ff87">Recall:</span> 0.815</span><span><span class="tiv" style="color:#00e5ff">F1:</span> 0.741</span></div>
+    </div>
+    <div class="card">
+      <div class="ct">False positives vs. false negatives</div>
+      <div style="position:relative;height:195px"><canvas id="fpfnC" role="img" aria-label="FP vs FN">FP FN by threshold</canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="st">Confusion matrix and feature importance</div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Confusion matrix — threshold 0.40</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:3px;align-items:start">
+        <div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:2px">
+          <div style="font-size:9px;color:#3d6a8a;text-align:center">Pred no aurora</div>
+          <div style="font-size:9px;color:#3d6a8a;text-align:center">Pred aurora</div>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:space-around;font-size:9px;color:#3d6a8a;gap:4px;padding-right:3px">
+          <div>Actual aurora</div><div>Actual no aurora</div>
+        </div>
+        <div class="cmg">
+          <div class="cmc" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)"><div class="cmval" style="color:#fbbf24">12</div><div class="cmpct" style="color:#fbbf24">2.9%</div><div class="cmlbl" style="color:#fbbf24">FN</div></div>
+          <div class="cmc" style="background:rgba(0,200,120,.12);border-color:rgba(0,200,120,.35)"><div class="cmval" style="color:#00c87a">54</div><div class="cmpct" style="color:#00c87a">13.1%</div><div class="cmlbl" style="color:#00c87a">TP</div></div>
+          <div class="cmc" style="background:rgba(42,120,214,.12);border-color:rgba(42,120,214,.35)"><div class="cmval" style="color:#60a5fa">266</div><div class="cmpct" style="color:#60a5fa">64.6%</div><div class="cmlbl" style="color:#60a5fa">TN</div></div>
+          <div class="cmc" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35)"><div class="cmval" style="color:#f87171">20</div><div class="cmpct" style="color:#f87171">4.9%</div><div class="cmlbl" style="color:#f87171">FP</div></div>
+        </div>
+      </div>
+      <div style="margin-top:9px"><div style="font-size:10px;color:#96ccf0;font-weight:600;margin-bottom:5px">Before vs. after tuning</div><div style="position:relative;height:115px"><canvas id="baC" role="img" aria-label="Before after tuning">Baseline vs tuned</canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="ct">Feature importance — Random Forest <span>Top 12</span></div>
+      <div class="fiwrap" id="fiW"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+
+/* ---- AURORA BACKGROUND ---- */
+const auC=document.getElementById('aurora-canvas');
+const auX=auC.getContext('2d');
+let auW=0,auH=0,auT=0;
+const bands=[];
+function mkBands(){
+  bands.length=0;
+  for(let i=0;i<8;i++) bands.push({
+    y:(0.06+i*0.085)*auH, amp:22+Math.random()*45, freq:.003+Math.random()*.004,
+    spd:.0004+Math.random()*.0007, ph:Math.random()*Math.PI*2,
+    hue:[150,162,140,170,155,145,165,158][i], al:.07+Math.random()*.14,
+    w:18+Math.random()*38, drift:(Math.random()-.5)*.0003
+  });
+}
+function resizeAu(){
+  const r=document.querySelector('.root');
+  auW=r.offsetWidth||680; auH=Math.max(r.offsetHeight,1100);
+  auC.width=auW; auC.height=auH;
+}
+let starCache=null;
+function drawStars(){
+  if(!starCache||starCache.w!==auW){
+    starCache={w:auW,pts:[]};
+    let s=7777;const rr=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296};
+    for(let i=0;i<140;i++) starCache.pts.push([rr()*auW,rr()*auH*.65,rr()*1.3,.25+rr()*.75]);
+  }
+  starCache.pts.forEach(([x,y,r,a])=>{auX.beginPath();auX.arc(x,y,r,0,Math.PI*2);auX.fillStyle=`rgba(255,255,255,${a})`;auX.fill();});
+}
+function drawMtns(){
+  auX.fillStyle='#050b1a';auX.beginPath();auX.moveTo(0,auH);
+  [[0,.84],[.07,.74],[.14,.68],[.21,.76],[.30,.61],[.38,.71],[.46,.57],[.54,.68],[.62,.62],[.70,.73],[.78,.60],[.86,.70],[.93,.63],[1,.71],[1,1]].forEach(([x,y])=>auX.lineTo(x*auW,y*auH));
+  auX.closePath();auX.fill();
+  auX.fillStyle='#07101f';auX.beginPath();auX.moveTo(0,auH);
+  [[0,.88],[.09,.81],[.18,.76],[.27,.83],[.35,.74],[.43,.80],[.52,.75],[.60,.81],[.68,.76],[.77,.82],[.85,.77],[.93,.83],[1,.78],[1,1]].forEach(([x,y])=>auX.lineTo(x*auW,y*auH));
+  auX.closePath();auX.fill();
+  const wg=auX.createLinearGradient(0,auH*.82,0,auH*.92);
+  wg.addColorStop(0,'rgba(0,160,120,.05)');wg.addColorStop(1,'rgba(0,160,120,0)');
+  auX.fillStyle=wg;auX.fillRect(0,auH*.82,auW,auH*.10);
+}
+function animAurora(){
+  auX.clearRect(0,0,auW,auH);
+  const sky=auX.createLinearGradient(0,0,0,auH*.88);
+  sky.addColorStop(0,'#000c0f');sky.addColorStop(.4,'#010f20');sky.addColorStop(1,'#031428');
+  auX.fillStyle=sky;auX.fillRect(0,0,auW,auH);
+  drawStars();
+  auT++;
+  bands.forEach((b,bi)=>{
+    b.ph+=b.spd; b.y+=Math.sin(auT*.002+bi)*.1;
+    const segs=65;
+    for(let s2=0;s2<segs;s2++){
+      const x0=s2/segs*auW,x1=(s2+1)/segs*auW;
+      const wave=t=>b.y+b.amp*Math.sin(b.freq*(t*auW)+b.ph)+b.amp*.38*Math.sin(b.freq*1.8*(t*auW)+b.ph*1.4);
+      const cy=wave(s2/segs);
+      const pa=b.al*(.65+.35*Math.sin(auT*.019+bi*1.2+s2*.06));
+      const sh=b.w*(.55+.45*Math.sin(auT*.013+s2*.09));
+      const g=auX.createLinearGradient(x0,cy-sh,x0,cy+sh);
+      g.addColorStop(0,`hsla(${b.hue},100%,62%,0)`);
+      g.addColorStop(.3,`hsla(${b.hue},100%,60%,${pa})`);
+      g.addColorStop(.5,`hsla(${b.hue+12},100%,76%,${pa*1.5})`);
+      g.addColorStop(.7,`hsla(${b.hue},100%,60%,${pa})`);
+      g.addColorStop(1,`hsla(${b.hue},100%,62%,0)`);
+      auX.fillStyle=g;auX.fillRect(x0,cy-sh,x1-x0+1,sh*2);
+    }
+  });
+  drawMtns();
+  requestAnimationFrame(animAurora);
+}
+resizeAu();mkBands();animAurora();
+window.addEventListener('resize',()=>{resizeAu();mkBands();starCache=null;});
+
+/* ---- PROBABILITY ENGINE ---- */
+function pCalc(bz,spd){return 1/(1+Math.exp(.25*bz-.008*(spd-400)));}
+function updateP(){
+  const bz=parseFloat(document.getElementById('bzS').value);
+  const spd=parseFloat(document.getElementById('spdS').value);
+  document.getElementById('bzV').textContent=bz.toFixed(1);
+  document.getElementById('spdV').textContent=spd.toFixed(0);
+  const p=Math.min(1,Math.max(0,pCalc(bz,spd))),pct=Math.round(p*100);
+  const f=document.getElementById('pFill');
+  f.style.width=pct+'%';
+  f.style.background=pct>70?'linear-gradient(90deg,#dc2626,#f59e0b)':pct>40?'linear-gradient(90deg,#059669,#eda100)':'linear-gradient(90deg,#2a78d6,#059669)';
+  document.getElementById('pNum').textContent=pct+'%';
+  const cmts=[[80,'Extreme southward Bz + very fast solar wind — aurora almost certain'],[60,'Significant southward Bz — highly likely'],[40,'Moderate — aurora possible at higher latitudes'],[20,'Weak coupling — aurora unlikely'],[0,'Northward Bz + slow wind — quiet conditions']];
+  document.getElementById('pCmt').textContent=(cmts.find(([t])=>pct>=t)||cmts[cmts.length-1])[1];
+}
+document.getElementById('bzS').addEventListener('input',updateP);
+document.getElementById('spdS').addEventListener('input',updateP);
+updateP();
+
+/* ---- ANIMATED DECISION BOUNDARY ---- */
+const dbCanvas=document.getElementById('dbCanvas');
+const dbCtx=dbCanvas.getContext('2d');
+const bzMin=-30,bzMax=20,spdMin=280,spdMax=820;
+const PL=42,PR=55,PT=8,PB=26;
+let dbW=0,dbH=0,dbT=0,dbRaf=null;
+let cursorBz=-10,cursorSpd=500,cursorOn=false;
+
+/* Seeded data points */
+let noA=[],auA=[];
+function seedData(){
+  let s=42;const r=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296};
+  noA=[];
+  for(let i=0;i<300;i++) noA.push({bz:r()*24-12,spd:380+r()*140,vx:(r()-.5)*.018,vy:(r()-.5)*.012,ph:r()*Math.PI*2});
+  let s2=99;const r2=()=>{s2=(s2*1664525+1013904223)>>>0;return s2/4294967296};
+  auA=[];
+  for(let i=0;i<32;i++) auA.push({bz:-25+r2()*30,spd:450+r2()*270,vx:(r2()-.5)*.015,vy:(r2()-.5)*.01,ph:r2()*Math.PI*2});
+}
+seedData();
+
+function initDB(){
+  const par=dbCanvas.parentElement;
+  dbW=par.clientWidth||620; dbH=par.clientHeight||230;
+  dbCanvas.width=dbW; dbCanvas.height=dbH;
+}
+
+function drawDB(){
+  dbT++;
+  dbCtx.clearRect(0,0,dbW,dbH);
+  const cW=dbW-PL-PR, cH=dbH-PT-PB;
+  const toX=bz=>(bz-bzMin)/(bzMax-bzMin)*cW+PL;
+  const toY=spd=>PT+cH-(spd-spdMin)/(spdMax-spdMin)*cH;
+  const pf=(bz,spd)=>1/(1+Math.exp(.25*bz-.008*(spd-400)));
+
+  /* field */
+  const img=dbCtx.createImageData(cW,cH);
+  for(let y=0;y<cH;y++){for(let x=0;x<cW;x++){
+    const bz=bzMin+(x/cW)*(bzMax-bzMin);
+    const spd=spdMax-(y/cH)*(spdMax-spdMin);
+    const p=Math.min(1,Math.max(0,pf(bz,spd)));
+    const i2=(y*cW+x)*4;
+    const pulse=.85+.15*Math.sin(dbT*.04+x*.02+y*.015);
+    if(p>.5){const t=(p-.5)*2*pulse;img.data[i2]=Math.round(180*t);img.data[i2+1]=Math.round(30*t);img.data[i2+2]=0;img.data[i2+3]=48;}
+    else{const t=p*2*pulse;img.data[i2]=0;img.data[i2+1]=Math.round(70*t);img.data[i2+2]=Math.round(190);img.data[i2+3]=42;}
+  }}
+  const off=new OffscreenCanvas(cW,cH);off.getContext('2d').putImageData(img,0,0);
+  dbCtx.drawImage(off,PL,PT);
+
+  /* contour lines */
+  [[.1,'#2563eb'],[.3,'#0891b2'],[.5,'#059669'],[.7,'#ca8a04'],[.85,'#dc2626']].forEach(([lv,col])=>{
+    const pts=[];
+    for(let bz=bzMin;bz<=bzMax;bz+=.3){
+      const spd=(Math.log(1/lv-1)+.25*bz)/.008+400;
+      if(spd>=spdMin&&spd<=spdMax) pts.push([toX(bz),toY(spd)]);
+    }
+    if(pts.length<2)return;
+    dbCtx.beginPath();dbCtx.moveTo(pts[0][0],pts[0][1]);pts.forEach(p=>dbCtx.lineTo(p[0],p[1]));
+    dbCtx.strokeStyle=col;dbCtx.lineWidth=1.5;dbCtx.globalAlpha=.75;dbCtx.stroke();dbCtx.globalAlpha=1;
+    if(pts.length>4){const m=pts[Math.floor(pts.length/2)];dbCtx.fillStyle=col;dbCtx.font='bold 9px system-ui';dbCtx.fillText(Math.round(lv*100)+'%',m[0]+2,m[1]-2);}
+  });
+
+  /* animate no-aurora bubbles */
+  noA.forEach(d=>{
+    d.bz+=d.vx*(1+.3*Math.sin(dbT*.02+d.ph));
+    d.spd+=d.vy*(1+.3*Math.cos(dbT*.025+d.ph));
+    if(d.bz<-12||d.bz>12) d.vx*=-1;
+    if(d.spd<350||d.spd>540) d.vy*=-1;
+    const pulse=1+.25*Math.sin(dbT*.06+d.ph);
+    const p=pf(d.bz,d.spd);
+    const alpha=.45+.3*Math.sin(dbT*.05+d.ph);
+    const r2=4*pulse;
+    dbCtx.beginPath();dbCtx.arc(toX(d.bz),toY(d.spd),r2,0,Math.PI*2);
+    dbCtx.fillStyle=`rgba(124,58,237,${alpha})`;dbCtx.fill();
+    dbCtx.strokeStyle=`rgba(200,180,255,${alpha*.4})`;dbCtx.lineWidth=.7;dbCtx.stroke();
+  });
+
+  /* animate aurora bubbles */
+  auA.forEach(d=>{
+    d.bz+=d.vx*(1+.35*Math.sin(dbT*.018+d.ph));
+    d.spd+=d.vy*(1+.35*Math.cos(dbT*.022+d.ph));
+    if(d.bz<-28||d.bz>8) d.vx*=-1;
+    if(d.spd<420||d.spd>810) d.vy*=-1;
+    const pulse=1+.3*Math.sin(dbT*.07+d.ph);
+    const alpha=.7+.3*Math.sin(dbT*.055+d.ph);
+    const r2=5.5*pulse;
+    /* glow */
+    const g=dbCtx.createRadialGradient(toX(d.bz),toY(d.spd),0,toX(d.bz),toY(d.spd),r2*2.5);
+    g.addColorStop(0,`rgba(220,38,38,${alpha*.5})`);g.addColorStop(1,'rgba(220,38,38,0)');
+    dbCtx.beginPath();dbCtx.arc(toX(d.bz),toY(d.spd),r2*2.5,0,Math.PI*2);dbCtx.fillStyle=g;dbCtx.fill();
+    dbCtx.beginPath();dbCtx.arc(toX(d.bz),toY(d.spd),r2,0,Math.PI*2);
+    dbCtx.fillStyle=`rgba(220,38,38,${alpha})`;dbCtx.fill();
+    dbCtx.strokeStyle=`rgba(255,180,180,${alpha*.5})`;dbCtx.lineWidth=1;dbCtx.stroke();
+  });
+
+  /* cursor bubble */
+  if(cursorOn){
+    const cx=toX(cursorBz),cy=toY(cursorSpd);
+    const cp=pf(cursorBz,cursorSpd);
+    const pulse=1+.2*Math.sin(dbT*.12);
+    const cg=dbCtx.createRadialGradient(cx,cy,0,cx,cy,14*pulse);
+    cg.addColorStop(0,'rgba(245,158,11,.7)');cg.addColorStop(1,'rgba(245,158,11,0)');
+    dbCtx.beginPath();dbCtx.arc(cx,cy,14*pulse,0,Math.PI*2);dbCtx.fillStyle=cg;dbCtx.fill();
+    dbCtx.beginPath();dbCtx.arc(cx,cy,6,0,Math.PI*2);dbCtx.fillStyle='#f59e0b';dbCtx.fill();
+    dbCtx.fillStyle='rgba(255,255,255,.9)';dbCtx.font='bold 9px system-ui';
+    dbCtx.fillText(Math.round(cp*100)+'%',cx+8,cy-5);
+  }
+
+  /* axes */
+  dbCtx.fillStyle='rgba(100,160,200,.6)';dbCtx.font='9px system-ui';
+  for(let bz=-30;bz<=20;bz+=10) dbCtx.fillText(bz,toX(bz)-5,PT+cH+16);
+  for(let spd=300;spd<=800;spd+=100) dbCtx.fillText(spd,4,toY(spd)+3);
+  dbCtx.strokeStyle='rgba(100,160,200,.25)';dbCtx.lineWidth=.8;dbCtx.setLineDash([3,3]);
+  dbCtx.beginPath();dbCtx.moveTo(toX(0),PT);dbCtx.lineTo(toX(0),PT+cH);dbCtx.stroke();
+  dbCtx.setLineDash([]);
+  dbCtx.fillStyle='rgba(74,122,155,.7)';dbCtx.font='9px system-ui';
+  dbCtx.fillText('Bz_GSM (nT)  ← southward favors aurora',PL+cW/2-80,dbH-3);
+
+  dbRaf=requestAnimationFrame(drawDB);
+}
+
+function startDB(){initDB();if(dbRaf)cancelAnimationFrame(dbRaf);drawDB();}
+setTimeout(startDB,200);
+window.addEventListener('resize',()=>setTimeout(startDB,300));
+
+dbCanvas.addEventListener('mousemove',e=>{
+  const rect=dbCanvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const cW=dbW-PL-PR,cH=dbH-PT-PB;
+  cursorBz=bzMin+(mx-PL)/cW*(bzMax-bzMin);
+  cursorSpd=spdMax-(my-PT)/cH*(spdMax-spdMin);
+  cursorBz=Math.max(bzMin,Math.min(bzMax,cursorBz));
+  cursorSpd=Math.max(spdMin,Math.min(spdMax,cursorSpd));
+  cursorOn=true;
+});
+dbCanvas.addEventListener('mouseleave',()=>cursorOn=false);
+
+/* ---- GLOBE ---- */
+const gc=document.getElementById('globe');
+const gctx=gc.getContext('2d');
+const GW=240,GH=240,GR=108,GCX=120,GCY=120;
+let gRY=.4,gRX=.18,gKp=5,gAnim=false,gKpF=5,gKpD=1,gDrg=false,gDX=null,gDY=null,gPT=0;
+const KPD={0:{st:'G0 — no storm',lat:'~75° N',rad:'~5°',vis:'Very faint',tgt:'No',prob:5,col:'#4ade80',iR:.08,oR:.15,dsc:'No significant aurora.'},1:{st:'G0 — no storm',lat:'~73° N',rad:'~8°',vis:'Faint',tgt:'No',prob:12,col:'#22c55e',iR:.1,oR:.18,dsc:'Very quiet. Polar regions only.'},2:{st:'G0 — no storm',lat:'~72° N',rad:'~12°',vis:'Faint',tgt:'No',prob:20,col:'#16a34a',iR:.12,oR:.22,dsc:'Quiet. Faint aurora near poles.'},3:{st:'G0 — no storm',lat:'~70° N',rad:'~15°',vis:'Low',tgt:'No',prob:25,col:'#15803d',iR:.14,oR:.27,dsc:'Limited to high-latitude regions. Faint curtains above 65°N.'},4:{st:'G0 — unsettled',lat:'~68° N',rad:'~20°',vis:'Moderate',tgt:'No',prob:40,col:'#84cc16',iR:.16,oR:.33,dsc:'Unsettled. Aurora visible at sub-auroral latitudes.'},5:{st:'G1 — minor storm',lat:'~66° N',rad:'~25°',vis:'Moderate',tgt:'Yes (Kp ≥ 5)',prob:65,col:'#0ea5e9',iR:.18,oR:.40,dsc:'Minor storm — model threshold. Aurora at mid-latitudes.'},6:{st:'G2 — moderate storm',lat:'~64° N',rad:'~30°',vis:'Strong',tgt:'Yes',prob:78,col:'#f59e0b',iR:.20,oR:.48,dsc:'Moderate storm. Aurora visible to ~50°N.'},7:{st:'G3 — strong storm',lat:'~60° N',rad:'~35°',vis:'Strong',tgt:'Yes',prob:88,col:'#f97316',iR:.22,oR:.56,dsc:'Strong activity. Northern Europe, Canada, northern US.'},8:{st:'G4 — severe storm',lat:'~55° N',rad:'~42°',vis:'Very strong',tgt:'Yes',prob:95,col:'#ef4444',iR:.25,oR:.64,dsc:'Severe storm. Visible to Mediterranean and southern US.'},9:{st:'G5 — extreme storm',lat:'~50° N',rad:'~50°',vis:'Extreme',tgt:'Yes',prob:99,col:'#dc2626',iR:.28,oR:.74,dsc:'Extreme storm. Visible at low latitudes globally.'}};
+function gProj(lat,lon){
+  const phi=lat*Math.PI/180,lam=lon*Math.PI/180+gRY;
+  const sP=Math.sin(phi),cP=Math.cos(phi),sL=Math.sin(lam),cL=Math.cos(lam);
+  const sRx=Math.sin(gRX),cRx=Math.cos(gRX);
+  const x3=cP*sL,y3=sP*cRx+cP*cL*sRx,z3=sP*sRx-cP*cL*cRx;
+  if(z3<0)return null;
+  return{x:GCX+x3*GR,y:GCY-y3*GR};
+}
+const CONTS=[[[-10,-80],[-10,-35],[-60,-35],[-60,-80],[-10,-80]],[[5,-20],[5,55],[-40,55],[-40,-20],[5,-20]],[[35,60],[35,130],[70,130],[70,60],[35,60]],[[-10,115],[-10,145],[-40,145],[-40,115],[-10,115]],[[-70,-180],[-70,180],[-90,180],[-90,-180],[-70,-180]],[[35,-10],[35,60],[70,60],[70,-10],[35,-10]],[[50,-130],[50,-60],[70,-60],[70,-130],[50,-130]]];
+function drawGlobe(){
+  gctx.clearRect(0,0,GW,GH);
+  const d=KPD[Math.round(gKp)];
+  gctx.save();gctx.beginPath();gctx.arc(GCX,GCY,GR,0,Math.PI*2);gctx.clip();
+  const gr=gctx.createRadialGradient(GCX-28,GCY-28,7,GCX,GCY,GR);
+  gr.addColorStop(0,'#1e3a5f');gr.addColorStop(.5,'#0c1f3a');gr.addColorStop(1,'#060d1c');
+  gctx.fillStyle=gr;gctx.fillRect(0,0,GW,GH);
+  gctx.strokeStyle='rgba(100,160,255,.1)';gctx.lineWidth=.5;
+  for(let lat=-60;lat<=80;lat+=20){gctx.beginPath();let f=true;for(let lon=-180;lon<=180;lon+=4){const p=gProj(lat,lon);if(!p){f=true;continue;}f?gctx.moveTo(p.x,p.y):gctx.lineTo(p.x,p.y);f=false;}gctx.stroke();}
+  for(let lon=-180;lon<=180;lon+=30){gctx.beginPath();let f=true;for(let lat=-90;lat<=90;lat+=4){const p=gProj(lat,lon);if(!p){f=true;continue;}f?gctx.moveTo(p.x,p.y):gctx.lineTo(p.x,p.y);f=false;}gctx.stroke();}
+  CONTS.forEach(poly=>{gctx.beginPath();let st=false;poly.forEach(([la,lo])=>{const p=gProj(la,lo);if(!p)return;if(!st){gctx.moveTo(p.x,p.y);st=true;}else gctx.lineTo(p.x,p.y);});if(st){gctx.closePath();gctx.fillStyle='rgba(90,120,70,.5)';gctx.strokeStyle='rgba(110,140,90,.35)';gctx.lineWidth=.6;gctx.fill();gctx.stroke();}});
+  function h2r(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  const [rr2,rg2,rb2]=h2r(d.col);
+  const pA=.55+.2*Math.sin(gPT*.08);
+  const iH=d.iR*180,oH=d.oR*180,iLat=90-iH,oLat=90-oH;
+  for(let s2=0;s2<6;s2++){
+    const tt=s2/5,lat=oLat+tt*(iLat-oLat),al=.06+.28*Math.sin(Math.PI*tt)*pA;
+    gctx.beginPath();let f2=true;
+    for(let lon=-180;lon<=180;lon+=2){const p=gProj(lat,lon);if(!p){f2=true;continue;}f2?gctx.moveTo(p.x,p.y):gctx.lineTo(p.x,p.y);f2=false;}
+    gctx.strokeStyle=`rgba(${rr2},${rg2},${rb2},${al})`;gctx.lineWidth=3+7*Math.sin(Math.PI*tt);gctx.stroke();
+  }
+  const mLat=(iLat+oLat)/2,bA=.7+.3*Math.sin(gPT*.07);
+  gctx.beginPath();let f3=true;
+  for(let lon=-180;lon<=180;lon+=1){const p=gProj(mLat,lon);if(!p){f3=true;continue;}f3?gctx.moveTo(p.x,p.y):gctx.lineTo(p.x,p.y);f3=false;}
+  gctx.strokeStyle=`rgba(${rr2},${rg2},${rb2},${bA})`;gctx.lineWidth=2+.5*Math.sin(gPT*.06);gctx.stroke();
+  gctx.restore();
+  gctx.beginPath();gctx.arc(GCX,GCY,GR,0,Math.PI*2);gctx.strokeStyle='rgba(100,180,255,.28)';gctx.lineWidth=1.5;gctx.stroke();
+}
+function updGUI(){
+  const ki=Math.round(gKp),d=KPD[ki];
+  document.getElementById('kpv').textContent=ki;
+  document.getElementById('kpdsc').textContent=d.dsc;
+  const st=document.getElementById('kpst');
+  st.textContent=d.st;
+  st.style.cssText=`background:${ki>=8?'rgba(254,205,211,.12)':ki>=6?'rgba(254,243,199,.12)':ki>=5?'rgba(219,234,254,.12)':'rgba(220,252,231,.12)'};color:${ki>=8?'#fca5a5':ki>=6?'#fcd34d':ki>=5?'#93c5fd':'#86efac'};border:1px solid ${ki>=8?'rgba(248,113,113,.3)':ki>=6?'rgba(251,191,36,.3)':ki>=5?'rgba(147,197,253,.3)':'rgba(134,239,172,.3)'}`;
+  document.getElementById('slat').textContent=d.lat;
+  document.getElementById('srad').textContent=d.rad;
+  document.getElementById('svis').textContent=d.vis;
+  document.getElementById('stgt').textContent=d.tgt;
+  document.getElementById('ppct').textContent=d.prob+'%';
+  const pf=document.getElementById('gPfill');pf.style.width=d.prob+'%';pf.style.background=d.col;
+  document.querySelectorAll('.kb').forEach(b=>{const bk=parseInt(b.dataset.kp),isA=ki===bk;b.classList.toggle('active',isA);if(isA){b.style.background=d.col;b.style.color='#fff';b.style.borderColor=d.col;}else{b.style.background='';b.style.color='';b.style.borderColor='';}});
+  document.getElementById('kpSlider').value=ki;
+}
+function gLoop(){gPT++;if(gAnim){gKpF+=gKpD*.025;if(gKpF>=9){gKpF=9;gKpD=-1;}if(gKpF<=0){gKpF=0;gKpD=1;}gKp=gKpF;updGUI();}gRY+=.004;drawGlobe();requestAnimationFrame(gLoop);}
+gLoop();updGUI();
+document.getElementById('kpSlider').addEventListener('input',e=>{gKp=parseInt(e.target.value);gAnim=false;document.getElementById('abtn').textContent='▶ Animate';gKpF=gKp;updGUI();});
+document.querySelectorAll('.kb').forEach(b=>b.addEventListener('click',()=>{gKp=parseInt(b.dataset.kp);gKpF=gKp;gAnim=false;document.getElementById('abtn').textContent='▶ Animate';updGUI();}));
+document.getElementById('abtn').addEventListener('click',()=>{gAnim=!gAnim;document.getElementById('abtn').textContent=gAnim?'⏸ Pause':'▶ Animate';});
+gc.addEventListener('mousedown',e=>{gDrg=true;gDX=e.clientX;gDY=e.clientY;});
+gc.addEventListener('mousemove',e=>{if(!gDrg)return;gRY+=(e.clientX-gDX)*.008;gRX+=(e.clientY-gDY)*.008;gRX=Math.max(-.6,Math.min(.6,gRX));gDX=e.clientX;gDY=e.clientY;});
+window.addEventListener('mouseup',()=>gDrg=false);
+gc.addEventListener('touchstart',e=>{e.preventDefault();gDrg=true;gDX=e.touches[0].clientX;gDY=e.touches[0].clientY;},{passive:false});
+gc.addEventListener('touchmove',e=>{if(!gDrg)return;gRY+=(e.touches[0].clientX-gDX)*.008;gRX+=(e.touches[0].clientY-gDY)*.008;gRX=Math.max(-.6,Math.min(.6,gRX));gDX=e.touches[0].clientX;gDY=e.touches[0].clientY;});
+gc.addEventListener('touchend',()=>gDrg=false);
+
+/* ---- CHARTS ---- */
+const rocD={fpr:[0,.01,.02,.04,.07,.1,.15,.22,.3,.42,.58,.75,.9,1],tpr:[0,.42,.59,.71,.79,.84,.89,.92,.95,.97,.98,.99,1,1]};
+new Chart(document.getElementById('rocC'),{type:'line',data:{labels:rocD.fpr,datasets:[{data:rocD.tpr,borderColor:'#00ff87',borderWidth:2,fill:{target:'origin',above:'rgba(0,255,135,.06)'},pointRadius:0,tension:.3},{data:rocD.fpr,borderColor:'#333',borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0},{data:[null,null,null,null,null,.84,null,null,null,null,null,null,null,null],borderColor:'transparent',pointBackgroundColor:'#f59e0b',pointRadius:[0,0,0,0,0,7,0,0,0,0,0,0,0,0]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'},title:{display:true,text:'FPR',color:'#3a6a8a',font:{size:9}}},y:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'},min:0,max:1.05,title:{display:true,text:'TPR',color:'#3a6a8a',font:{size:9}}}}}});
+
+const prX=[0,.1,.2,.3,.4,.5,.6,.7,.78,.85,.92,1],prY=[1,.97,.94,.92,.88,.83,.76,.67,.55,.41,.27,.095];
+new Chart(document.getElementById('prC'),{type:'line',data:{datasets:[{data:prX.map((x,i)=>({x,y:prY[i]})),borderColor:'#00e5ff',borderWidth:2,fill:{target:'origin',above:'rgba(0,229,255,.06)'},pointRadius:0,tension:.3,parsing:false},{data:[{x:0,y:.095},{x:1,y:.095}],borderColor:'#333',borderWidth:1,pointRadius:0,parsing:false},{data:[{x:.815,y:.71}],borderColor:'transparent',pointBackgroundColor:'#f59e0b',pointRadius:7,parsing:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'},min:0,max:1,title:{display:true,text:'Recall',color:'#3a6a8a',font:{size:9}}},y:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'},min:0,max:1.05,title:{display:true,text:'Precision',color:'#3a6a8a',font:{size:9}}}}}});
+
+const tV=[.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80];
+const pV=[.28,.32,.37,.42,.49,.55,.62,.68,.74,.80,.85,.89,.92,.94,.96,.98];
+const rV=[.98,.97,.96,.94,.92,.89,.85,.82,.76,.69,.60,.50,.39,.28,.18,.09];
+const f1V=pV.map((p,i)=>rV[i]===0?0:2*p*rV[i]/(p+rV[i]));
+const fpV=[85,80,74,68,61,54,46,40,33,27,21,16,11,7,4,2];
+const fnV=[1,2,3,4,5,7,9,12,16,21,28,36,44,52,59,63];
+
+new Chart(document.getElementById('tC'),{type:'line',data:{labels:tV.map(v=>v.toFixed(2)),datasets:[{data:pV,borderColor:'#8b5cf6',borderWidth:2,pointRadius:3,tension:.3,pointBackgroundColor:'#8b5cf6'},{data:rV,borderColor:'#00ff87',borderWidth:2,pointRadius:3,tension:.3,pointBackgroundColor:'#00ff87'},{data:f1V,borderColor:'#00e5ff',borderWidth:2,pointRadius:3,tension:.3,pointBackgroundColor:'#00e5ff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'}},y:{min:0,max:1.05,ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'}}}}});
+
+document.getElementById('tS').addEventListener('input',function(){
+  const t=parseFloat(this.value);document.getElementById('tV').textContent=t.toFixed(2);
+  const idx=tV.findIndex(v=>Math.abs(v-t)<.001);
+  if(idx>=0) document.getElementById('thInfo').innerHTML=`<span><span class="tiv" style="color:#8b5cf6">Precision:</span> ${pV[idx].toFixed(3)}</span><span><span class="tiv" style="color:#00ff87">Recall:</span> ${rV[idx].toFixed(3)}</span><span><span class="tiv" style="color:#00e5ff">F1:</span> ${f1V[idx].toFixed(3)}</span>`;
+});
+
+new Chart(document.getElementById('fpfnC'),{type:'line',data:{labels:tV.map(v=>v.toFixed(2)),datasets:[{data:fpV,borderColor:'#f59e0b',borderWidth:2,borderDash:[6,3],pointRadius:3,tension:.3,pointBackgroundColor:'#f59e0b'},{data:fnV,borderColor:'#ef4444',borderWidth:2,pointRadius:3,tension:.3,pointBackgroundColor:'#ef4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'}},y:{title:{display:true,text:'Count',color:'#3a6a8a',font:{size:9}},ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'}}}}});
+
+new Chart(document.getElementById('baC'),{type:'bar',data:{labels:['Accuracy','Precision','Recall','F1'],datasets:[{data:[.882,.752,.688,.719],backgroundColor:'rgba(42,120,214,.6)',borderRadius:3,label:'Baseline'},{data:[.871,.730,.815,.770],backgroundColor:'rgba(0,255,135,.65)',borderRadius:3,label:'Tuned'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'}},y:{min:0,max:1.1,ticks:{color:'#4a7a9b',font:{size:9}},grid:{color:'rgba(0,80,160,.12)'}}}}});
+
+/* FEATURE IMPORTANCE */
+const fts=[{n:'electric_field_mvm',i:.1821,c:'#f59e0b'},{n:'flow_pressure_npa',i:.1234,c:'#f59e0b'},{n:'dst_nt',i:.1189,c:'#8b5cf6'},{n:'bz_rolling_6h',i:.0987,c:'#00e5ff'},{n:'bz_rolling_3h',i:.0876,c:'#00e5ff'},{n:'bz_lag_6h',i:.0754,c:'#00e5ff'},{n:'bz_gsm_nt',i:.0712,c:'#00e5ff'},{n:'flow_speed_kms',i:.0698,c:'#2a78d6'},{n:'speed_rolling_6h',i:.0601,c:'#2a78d6'},{n:'bz_lag_3h',i:.0511,c:'#00e5ff'},{n:'proton_density_ncc',i:.0398,c:'#00c87a'},{n:'imf_mag_nt',i:.0219,c:'#ef4444'}];
+const mI=fts[0].i,fiW=document.getElementById('fiW');
+fts.forEach(f=>{const row=document.createElement('div');row.className='firow';row.innerHTML=`<div class="finame">${f.n}</div><div class="fitr"><div class="fifill" style="width:${(f.i/mI*100).toFixed(1)}%;background:${f.c}"></div></div><div class="finum">${f.i.toFixed(4)}</div>`;fiW.appendChild(row);});
+
+})();
+</script>
