@@ -2,7 +2,9 @@
 
 **AuroraAI** is a machine learning project that predicts aurora-likely space-weather conditions using NASA OMNIWeb solar wind and geomagnetic data. The project combines leakage-aware supervised learning, threshold tuning, model evaluation, and planned unsupervised space-weather regime discovery.
 
-The goal is to build a scientifically grounded aurora forecasting workflow that can later be extended into an interactive tracker dashboard.
+The goal is to build a scientifically grounded aurora forecasting workflow, presented as an interactive website.
+
+**Live site:** https://phoenixcoder26.github.io/AuroraAI/ (rotating aurora globe, storm-season replay, threshold slider, ROC and precision-recall curves)
 
 ---
 
@@ -41,7 +43,9 @@ The model uses solar wind, magnetic field, Dst index, electric field, pressure, 
 
 The project uses hourly space-weather data from:
 
-**NASA OMNIWeb**
+**NASA OMNIWeb**, 8,760 hourly rows for 2025 (8,435 hours after removing missing values and building lag features). Storm hours (Kp >= 5) are 5.5% of the data.
+
+The raw file is included in this repository at `data/omni2__LqhfgxZ4u.lst`.
 
 Main feature categories include:
 
@@ -96,8 +100,13 @@ Positive class: Kp >= 5
 | Recall    |                   0.417 |                0.583 |
 | F1-score  |                   0.556 |                0.667 |
 | ROC-AUC   |                  0.9769 |               0.9769 |
+| PR-AUC    |                   0.766 |                0.766 |
 
-Threshold tuning improved aurora recall from **41.7% to 58.3%** and reduced missed aurora-likely events from **56 to 40**.
+Threshold tuning improved aurora recall from **41.7% to 58.3%** and reduced missed aurora-likely hours from **56 to 40**.
+
+**Test setup:** the split is time-aware. The first 80% of hours trained the model and the last 20% (Oct 12 to Dec 21, 2025; 1,687 hours, 96 of them storm hours) tested it. A model with no skill would score a PR-AUC of 0.057 (the storm-hour share of the test set), so 0.766 is well above chance.
+
+**Storm-event view:** the test period contains 14 separate storm events (runs of consecutive Kp >= 5 hours). At threshold 0.40 the model flagged at least one hour in **10 of 14** events (9 of 14 at 0.50).
 
 ---
 
@@ -138,6 +147,15 @@ These features align with the physical intuition that aurora activity is driven 
 
 ---
 
+## Limitations
+
+* One year of data and one test window, so results may not hold in other solar-cycle conditions.
+* Kp measures geomagnetic activity, not whether aurora is visible from a given city (weather, darkness and local time also matter).
+* Dst is the model's most important feature and is a measured geomagnetic index closely related to Kp. A planned check is to retrain without it to see how much of the skill remains.
+* The aurora oval, city visibility and the Bz / wind-speed sandbox on the website are simplified teaching visuals, labeled as such. The charts and numbers come from the real test predictions.
+
+---
+
 ## Unsupervised Learning: Next Stage
 
 The next stage of AuroraAI focuses on unsupervised learning to discover natural space-weather regimes.
@@ -157,18 +175,17 @@ This stage will help answer:
 
 ---
 
-## Planned Dashboard
+## Interactive Website
 
-A final portfolio dashboard will combine:
+The site at https://phoenixcoder26.github.io/AuroraAI/ presents the results with real test-set predictions:
 
-* Supervised aurora prediction results
-* Threshold tuning explanation
-* Kp index educational explainer
-* Interactive aurora visibility globe
-* Unsupervised space-weather regime clusters
-* Model interpretation and visual storytelling
+* An aurora globe whose oval moves with the Kp index
+* A replay of all 1,687 test hours against the 14 real storm events
+* One alarm-threshold slider that updates the confusion matrix, precision, recall, F1, and the ROC and precision-recall curves
+* Feature importance, by feature and by family
+* A clearly labeled illustrative sandbox for Bz and solar-wind speed
 
-The dashboard will use a clean light aurora-inspired design.
+The site data is stored in `data/aurora_data.json`, exported from the notebook's final cell.
 
 ---
 
@@ -182,7 +199,7 @@ The dashboard will use a clean light aurora-inspired design.
 * Seaborn
 * Plotly
 * Jupyter Notebook
-* HTML/CSS/JavaScript for dashboard prototypes
+* HTML/CSS/JavaScript (canvas and SVG, no libraries) for the website
 
 ---
 
@@ -192,30 +209,29 @@ The dashboard will use a clean light aurora-inspired design.
 AuroraAI/
 │
 ├── data/
-│   ├── raw/
-│   └── processed/
+│   ├── omni2__LqhfgxZ4u.lst      # NASA OMNIWeb hourly data, 2025
+│   └── aurora_data.json          # real test-set results used by the website
 │
 ├── notebooks/
-│   └── AuroraAI_Modeling.ipynb
+│   └── Aurora_Modeling.ipynb     # cleaning, features, model, threshold tuning, export
 │
-├── outputs/
-│   ├── 01_roc_curve.png
-│   ├── 02_precision_recall_curve.png
-│   ├── 03_threshold_vs_metrics.png
-│   ├── 04_fp_vs_fn.png
-│   ├── 05_confusion_matrix_comparison.png
-│   ├── 06_feature_importance.png
-│   ├── 07_before_after_comparison.png
-│   └── 08_full_dashboard.png
-│
-├── website_assets/
-│   ├── aurora_light_advanced_dashboard.html
-│   └── kp_aurora_globe_interactive.html
+├── docs/
+│   └── index.html                # the website (GitHub Pages)
 │
 ├── README.md
-├── requirements.txt
-└── .gitignore
+└── requirements.txt
 ```
+
+---
+
+## Run It Yourself
+
+```bash
+pip install -r requirements.txt
+jupyter notebook notebooks/Aurora_Modeling.ipynb
+```
+
+In the notebook, set `project_path` (cell 3) to the folder that contains the data file, for example the `data` folder in this repository. Run all cells; the last cell regenerates `aurora_data.json`.
 
 ---
 
@@ -226,9 +242,8 @@ Current status:
 ```text
 Supervised learning: completed
 Threshold tuning: completed
-Advanced visual prototypes: in progress
+Interactive website: published
 Unsupervised learning: next stage
-Final dashboard website: planned
 ```
 
 ---
@@ -236,5 +251,3 @@ Final dashboard website: planned
 ## Author
 
 **Farzana Khan Moutushi**
-M.S. Applied Analytics, Columbia University
-Machine Learning | Financial Data Science | AI & Analytics Portfolio
